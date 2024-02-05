@@ -1,0 +1,257 @@
+--Loading FaceInPage Dataset
+FaceInPage = LOAD 'C:/Users/user/Downloads/Datasets/FaceInPage.csv' USING PigStorage(',') AS (ID:int, Name:chararray, Nationality:chararray, CountryCod:int, Hobby:chararray);
+
+--Loading Associates Dataset
+Associates = LOAD 'C:/Users/user/Downloads/Datasets/Associates.csv' USING PigStorage(',') AS (Friendrel:int, PersonA_ID:int, PersonB_ID:int, DateofFriendship:int, Desc:chararray);
+
+--Loading AccessLogs Dataset
+AccessLogs = LOAD 'C:/Users/user/Downloads/Datasets/AccessLogs.csv' USING PigStorage(',') AS (AccessId:int, ByWho:int, WhatPage:int, TypeOfAccess:chararray, AccessTime:int);
+
+
+-- Store command is used to store the output files
+-- Dump command helped us verify the output on the grunt shell itself
+
+
+
+
+
+
+
+--Task_A
+
+-- Filtering users whose nationality matches your own
+filtered_users = FILTER FaceInPage BY Nationality == 'India';
+
+-- Projecting the name and hobby of the filtered users
+Task_A = FOREACH filtered_users GENERATE Name, Hobby;
+
+STORE Task_A INTO 'C:/Users/user/Downloads/Task_A' USING PigStorage(',');
+
+DUMP Task_A;
+
+
+
+
+
+
+
+
+--Task_B
+
+-- Grouping the AccessLogs by FaceInPage
+grouped_access = GROUP AccessLogs BY WhatPage;
+
+-- Calculating the access count for each FaceInPage
+page_access_count = FOREACH grouped_access GENERATE group AS AccessId, COUNT(AccessLogs) AS AccessCount;
+
+-- Joined the page_access_count and FaceInPage datasets
+popular_pages = JOIN page_access_count BY AccessId, FaceInPage BY ID;
+
+-- Order the pages by access count in descending order
+sorted_pages = ORDER popular_pages BY AccessCount DESC;
+
+-- Limit the result to the top 10 most popular pages
+top_10_pages = LIMIT sorted_pages 10;
+
+-- Selecting the Id, Name, and Nationality of the top 10 pages as expected
+Task_B = FOREACH top_10_pages GENERATE FaceInPage::ID AS Id, FaceInPage::Name AS Name, FaceInPage::Nationality AS Nationality;
+
+
+STORE Task_B INTO 'C:/Users/user/Downloads/Task_B' USING PigStorage(',');
+
+DUMP Task_B;
+
+
+
+
+
+
+
+
+
+--Task_C
+
+-- Grouping the data by Nationality (country)
+grouped_data = GROUP FaceInPage BY Nationality;
+
+-- Calculating the count of citizens for each country
+Task_C = FOREACH grouped_data GENERATE group AS Country, COUNT(FaceInPage) AS CitizenCount;
+
+STORE Task_C INTO 'C:/Users/user/Downloads/Task_C' USING PigStorage(',');
+
+DUMP Task_C;
+
+
+
+
+
+
+
+
+
+--Task_D
+
+-- Filtering relationships for unique owners (PersonA_ID)
+grouped = GROUP Associates BY PersonA_ID;
+unique_owners = FOREACH grouped GENERATE group AS PersonA_ID;
+
+-- Grouping the Associates dataset by PersonA_ID to count relationships
+owner_relationship_count = FOREACH (GROUP unique_owners BY PersonA_ID) GENERATE group AS OwnerID, COUNT(unique_owners) AS RelationshipCount;
+
+-- Joined the FaceInPage data with owner_relationship_count
+owners_with_relationships = JOIN FaceInPage BY ID, owner_relationship_count BY OwnerID;
+
+-- If a FaceInPage owner isn't in Associates, their RelationshipCount should be 0 and it won't be written in output file
+Task_D = FOREACH owners_with_relationships GENERATE FaceInPage::Name AS OwnerName, (owner_relationship_count::RelationshipCount is null ? 0 : owner_relationship_count::RelationshipCount) AS HappinessFactor;
+
+STORE Task_D INTO 'C:/Users/user/Downloads/Task_D' USING PigStorage(',');
+
+DUMP Task_D;
+
+
+
+
+
+
+
+
+
+
+
+--Task_E
+
+-- Loading the data, initially casting everything as chararray
+AccessLogs = LOAD 'C:/Users/user/Downloads/Datasets/AccessLogs.csv' USING PigStorage(',') AS (AccessId:chararray, ByWho:chararray, WhatPage:chararray, TypeOfAccess:chararray, AccessTime:chararray);
+
+-- Now, explicitly casting the columns to their intended data types
+AccessLogs = FOREACH AccessLogs GENERATE (long)AccessId AS AccessId:long, (int)ByWho AS ByWho:int, (int)WhatPage AS WhatPage:int, TypeOfAccess, (int)AccessTime AS AccessTime:int;
+
+-- Grouped the AccessLogs by person (ByWho)
+grouped_access = GROUP AccessLogs BY ByWho;
+
+-- Calculating the total number of accesses and the number of distinct FaceInPages accessed for each person
+access_stats = FOREACH grouped_access {
+    total_accesses = COUNT(AccessLogs);
+    distinct_pages = DISTINCT AccessLogs.WhatPage;
+    GENERATE group AS PersonID, total_accesses AS TotalAccesses, COUNT(distinct_pages) AS DistinctPagesAccessed;
+}
+
+-- Joined the result with FaceInPage dataset to get owner's name
+Task_E = JOIN access_stats BY PersonID, FaceInPage BY ID;
+
+STORE Task_E INTO 'C:/Users/user/Downloads/Task_E' USING PigStorage(',');
+
+DUMP Task_E;
+
+
+
+
+
+
+
+
+--Task_F
+-- Loading the Associates dataset with required columns
+Associates = LOAD 'C:/Users/user/Downloads/Datasets/Associates.csv' USING PigStorage(',') AS (PersonA_ID:int, PersonB_ID:int);
+
+-- Loading the AccessLogs dataset
+AccessLogs = LOAD 'C:/Users/user/Downloads/Datasets/AccessLogs.csv' USING PigStorage(',') AS (AccessId:int, ByWho:int, WhatPage:int, TypeOfAccess:chararray, AccessTime:int);
+
+-- Filtering AccessLogs for distinct Person IDs and pages accessed
+grouped_access = GROUP AccessLogs BY (ByWho, WhatPage);
+distinct_access = FOREACH grouped_access GENERATE FLATTEN(group), MAX(AccessLogs.AccessTime) AS MaxAccessTime;
+distinct_access = DISTINCT distinct_access;
+
+-- Joined Associates with distinct_access to find friends who accessed their FaceInPage
+friends_with_access = JOIN Associates BY PersonA_ID, distinct_access BY ByWho;
+
+-- Filtering to get friends with no access to the same page
+no_access_friends = FILTER friends_with_access BY NOT (PersonB_ID == WhatPage);
+
+-- Loading the FaceInPage dataset to get names
+FaceInPage = LOAD 'C:/Users/user/Downloads/Datasets/FaceInPage.csv' USING PigStorage(',') AS (ID:int, Name:chararray, Nationality:chararray, CountryCode:int, Hobby:chararray);
+
+-- Joined the result with the FaceInPage dataset to get IDs and names
+result = JOIN no_access_friends BY PersonB_ID, FaceInPage BY ID;
+
+-- Projecting the IDs and names of people who meet the criteria
+PeopleWhoDidNotAccess = FOREACH result GENERATE no_access_friends::Associates::PersonA_ID AS ID;
+
+-- Remove duplicates (optional)
+Task_F = DISTINCT PeopleWhoDidNotAccess;
+
+STORE Task_F INTO 'C:/Users/user/Downloads/Task_F' USING PigStorage(',');
+
+DUMP Task_F;
+
+
+
+
+
+
+
+
+
+
+--Task_G
+-- Calculated the timestamp representing 90 days ago in minutes and uploaded the value from a file
+difference = LOAD 'C:/Users/user/Downloads/ninety_days_ago_timestamp.txt' AS (ninety_days_in_minutes: int);
+
+-- Loading the AccessLogs dataset
+access_logs = LOAD 'C:/Users/user/Downloads/Datasets/AccessLogs.csv' USING PigStorage(',') AS (AccessId: int, ByWho: int, WhatPage: int, TypeOfAccess: chararray, AccessTime: int);
+
+-- Grouped the AccessLogs by FaceInPage
+grouped_access = GROUP access_logs BY WhatPage;
+
+-- Calculating the most recent access date for each FaceInPage
+most_recent_access = FOREACH grouped_access {
+    last_access_date = MAX(access_logs.AccessTime);
+    GENERATE group AS PageID, last_access_date AS LastAccessDate;
+}
+
+-- Filtering FaceInPages that haven't been accessed in the last 90 days
+outdated_pages = FILTER most_recent_access BY LastAccessDate <= difference.ninety_days_in_minutes;
+
+-- Loading the FaceInPage dataset to get names
+facein_page = LOAD 'C:/Users/user/Downloads/Datasets/FaceInPage.csv' USING PigStorage(',') AS (ID: int, Name: chararray, Nationality: chararray, CountryCode: int, Hobby: chararray);
+
+-- Joined the result with the FaceInPage dataset to get IDs and names
+result = JOIN outdated_pages BY PageID, facein_page BY ID;
+
+-- Projecting the IDs and names of the outdated FaceInPages
+Task_G = FOREACH result GENERATE facein_page::ID AS ID, facein_page::Name AS Name;
+
+STORE Task_G INTO 'C:/Users/user/Downloads/Task_G' USING PigStorage(',');
+
+DUMP Task_G;
+
+
+
+
+
+
+
+
+
+
+
+--Task_H
+-- Grouping the Associates dataset by owner (PersonA_ID)
+grouped_relationships = GROUP Associates BY PersonA_ID;
+
+-- Calculating the number of relationships for each owner
+owner_relationship_count = FOREACH grouped_relationships GENERATE group AS OwnerID, COUNT(Associates) AS RelationshipCount;
+
+-- Calculating the average number of relationships across all owners
+total_relationships = GROUP owner_relationship_count ALL;
+average_relationship_count = FOREACH total_relationships GENERATE AVG(owner_relationship_count.RelationshipCount) AS AvgRelationshipCount;
+
+-- Filtering owners with more relationships than the average
+popular_owners = FILTER owner_relationship_count BY RelationshipCount > average_relationship_count.AvgRelationshipCount;
+
+-- Joined the result with the FaceInPage dataset to get owner names
+Task_H = JOIN popular_owners BY OwnerID, FaceInPage BY ID;
+
+STORE Task_H INTO 'C:/Users/user/Downloads/Task_H' USING PigStorage(',');
+
+DUMP Task_H;
