@@ -1,0 +1,51 @@
+FriendRel,PersonA_ID,PersonB_ID,DateofFriendship,Desc
+1,1,2,495873,Family
+2,1,3,237033,Fiance
+3,1,4,903340,Professor
+4,1,5,294831,Professor
+5,1,6,715736,Best Friend
+6,1,7,347791,College-Friend
+7,1,8,484842,Family
+8,1,9,89783,Professor
+9,1,10,160899,College-Friend
+10,1,11,469451,Family
+11,1,12,423447,Professor
+12,1,13,564296,Other
+13,1,14,152334,Fiance
+14,1,15,323113,Professor
+15,1,16,953966,Best Friend
+16,1,17,261849,College-Friend
+17,1,18,705332,Fiance
+18,1,19,286095,Other
+19,1,20,807465,Colleague
+20,1,21,182226,Fiance
+21,1,22,403938,Colleague
+22,1,23,421483,Professor
+23,1,24,476469,Other
+24,1,25,603450,Other
+25,1,26,160018,Best Friend
+26,1,27,955473,Colleague
+27,1,28,935064,Friend
+28,1,29,662428,Colleague
+29,1,30,598318,College-Friend
+30,1,31,408841,College-Friend
+31,1,32,958432,Other
+32,1,33,88924,Fiance
+33,1,34,788664,Colleague
+34,1,35,75254,Other
+35,1,36,628468,Professor
+36,1,37,687793,Friend
+37,1,38,471017,Colleague
+38,1,39,682430,Other
+39,1,40,247134,Friend
+40,1,41,253934,Professor
+41,1,42,32290,Best Friend
+42,1,43,576931,Other
+43,1,44,173327,Family
+44,1,45,419862,Fiance
+45,1,46,229984,Colleague
+46,1,47,869997,Professor
+47,1,48,41429,Professor
+48,1,49,203340,Colleague
+49,1,50,84382,Other
+50,1,51,74205,Colleague
