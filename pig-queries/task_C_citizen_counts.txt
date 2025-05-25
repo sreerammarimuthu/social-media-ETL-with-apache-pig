@@ -1,0 +1,6 @@
+-- Task C: Number of citizens per country
+
+GROUP_BY_COUNTRY = GROUP FaceInPage BY Nationality;
+RESULT_C = FOREACH GROUP_BY_COUNTRY GENERATE group AS Country, COUNT(FaceInPage) AS CitizenCount;
+STORE RESULT_C INTO 'output/task_C' USING PigStorage(',');
+DUMP RESULT_C;

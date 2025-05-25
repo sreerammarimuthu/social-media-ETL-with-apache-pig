@@ -1,0 +1,6 @@
+-- Task A: Name & hobby of users from India
+
+FILTERED = FILTER FaceInPage BY Nationality == 'India';
+RESULT_A = FOREACH FILTERED GENERATE Name, Hobby;
+STORE RESULT_A INTO 'output/task_A' USING PigStorage(',');
+DUMP RESULT_A;

@@ -1,0 +1,13 @@
+-- Task G: Pages not accessed in last 90 days
+
+DIFF = LOAD 'utils/ninety_days_ago_timestamp.txt' AS (Threshold:long);
+GROUPED = GROUP AccessLogs BY WhatPage;
+LAST_ACCESS = FOREACH GROUPED {
+    MAX_TIME = MAX(AccessLogs.AccessTime);
+    GENERATE group AS PageID, MAX_TIME AS LastTime;
+}
+FILTERED = FILTER LAST_ACCESS BY LastTime <= Threshold;
+JOINED = JOIN FILTERED BY PageID, FaceInPage BY ID;
+RESULT_G = FOREACH JOINED GENERATE FaceInPage::ID AS PageID, FaceInPage::Name AS Name;
+STORE RESULT_G INTO 'output/task_G' USING PigStorage(',');
+DUMP RESULT_G;

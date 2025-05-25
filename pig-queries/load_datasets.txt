@@ -1,0 +1,9 @@
+-- Common dataset loads; run this first in your grunt shell
+FaceInPage = LOAD 'data/FaceInPage.csv' USING PigStorage(',') 
+    AS (ID:int, Name:chararray, Nationality:chararray, CountryCode:int, Hobby:chararray);
+
+Associates = LOAD 'data/Associates.csv' USING PigStorage(',') 
+    AS (Friendrel:int, PersonA_ID:int, PersonB_ID:int, DateofFriendship:int, Desc:chararray);
+
+AccessLogs = LOAD 'data/AccessLogs.csv' USING PigStorage(',') 
+    AS (AccessId:int, ByWho:int, WhatPage:int, TypeOfAccess:chararray, AccessTime:int);

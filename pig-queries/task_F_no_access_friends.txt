@@ -1,0 +1,11 @@
+-- Task F: Friends who never accessed the owner’s page
+
+GROUPED = GROUP AccessLogs BY (ByWho, WhatPage);
+DISTINCT_ACCESS = FOREACH GROUPED GENERATE FLATTEN(group) AS (PersonID, PageID), MAX(AccessLogs.AccessTime) AS LastTime;
+JOINED = JOIN Associates BY PersonA_ID, DISTINCT_ACCESS BY PersonID;
+FILTERED = FILTER JOINED BY PersonB_ID != PageID;
+JOINED2 = JOIN FILTERED BY PersonB_ID, FaceInPage BY ID;
+RESULT_F = FOREACH JOINED2 GENERATE PersonA_ID AS OwnerID, FaceInPage::Name AS FriendName;
+RESULT_F = DISTINCT RESULT_F;
+STORE RESULT_F INTO 'output/task_F' USING PigStorage(',');
+DUMP RESULT_F;

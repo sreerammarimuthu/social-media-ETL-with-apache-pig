@@ -1,0 +1,11 @@
+-- Task H: Owners with above-average number of relationships
+
+GROUPED = GROUP Associates BY PersonA_ID;
+REL_COUNTS = FOREACH GROUPED GENERATE group AS OwnerID, COUNT(Associates) AS Count;
+ALL = GROUP REL_COUNTS ALL;
+AVG = FOREACH ALL GENERATE AVG(REL_COUNTS.Count) AS AvgCount;
+FILTERED = FILTER REL_COUNTS BY Count > AvgCount;
+JOINED = JOIN FILTERED BY OwnerID, FaceInPage BY ID;
+RESULT_H = FOREACH JOINED GENERATE FaceInPage::Name AS OwnerName, Count AS RelationshipCount;
+STORE RESULT_H INTO 'output/task_H' USING PigStorage(',');
+DUMP RESULT_H;

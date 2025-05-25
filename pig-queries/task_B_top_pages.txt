@@ -1,0 +1,13 @@
+-- Task B: Top 10 most-accessed pages with owner info
+
+GROUPED = GROUP AccessLogs BY WhatPage;
+PAGE_COUNTS = FOREACH GROUPED GENERATE group AS PageID, COUNT(AccessLogs) AS AccessCount;
+JOINED = JOIN PAGE_COUNTS BY PageID, FaceInPage BY ID;
+SORTED = ORDER JOINED BY AccessCount DESC;
+TOP10 = LIMIT SORTED 10;
+RESULT_B = FOREACH TOP10 GENERATE 
+    FaceInPage::ID AS ID, 
+    FaceInPage::Name AS Name, 
+    FaceInPage::Nationality AS Country;
+STORE RESULT_B INTO 'output/task_B' USING PigStorage(',');
+DUMP RESULT_B;

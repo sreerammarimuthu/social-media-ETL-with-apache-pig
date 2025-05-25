@@ -1,0 +1,15 @@
+-- Task E: Total accesses & distinct pages per user
+
+-- Reload AccessLogs with correct types if needed, or skip if load_datasets handles it
+-- (Assuming load_datasets is correct.)
+
+GROUPED = GROUP AccessLogs BY ByWho;
+STATS = FOREACH GROUPED {
+    TOTAL = COUNT(AccessLogs);
+    DISTINCT_PAGES = DISTINCT AccessLogs.WhatPage;
+    GENERATE group AS PersonID, TOTAL AS TotalAccesses, COUNT(DISTINCT_PAGES) AS DistinctPages;
+}
+JOINED = JOIN STATS BY PersonID, FaceInPage BY ID;
+RESULT_E = FOREACH JOINED GENERATE FaceInPage::Name AS Name, TotalAccesses, DistinctPages;
+STORE RESULT_E INTO 'output/task_E' USING PigStorage(',');
+DUMP RESULT_E;

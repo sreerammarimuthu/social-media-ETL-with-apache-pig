@@ -1,0 +1,10 @@
+-- Task D: HappinessFactor = number of friendships per owner
+
+GROUPED = GROUP Associates BY PersonA_ID;
+REL_COUNTS = FOREACH GROUPED GENERATE group AS OwnerID, COUNT(Associates) AS RelationshipCount;
+JOINED = JOIN FaceInPage BY ID, REL_COUNTS BY OwnerID;
+RESULT_D = FOREACH JOINED GENERATE
+    FaceInPage::Name AS OwnerName,
+    (RelationshipCount is null ? 0 : RelationshipCount) AS HappinessFactor;
+STORE RESULT_D INTO 'output/task_D' USING PigStorage(',');
+DUMP RESULT_D;
