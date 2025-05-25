@@ -12,5 +12,5 @@ This repository contains:
    - **`compute_timestamp.ipynb`**: Generates “90-days-ago” timestamp along with the latest one, stored in `ninety_days_ago_timestamp.txt`.
      
 3. **Subsets of Data** (`data/`):  
-   - Subsets of the actual data, added the CSVs (`subset_FaceInPage.csv`, `subset_Associates.csv`, `subset_AccessLogs.csv`). Described each one of them in detail in the 'data/data_overview.md'.
+   - Subsets of the actual data, added the CSVs (`subset_FaceInPage.csv`, `subset_Associates.csv`, `subset_AccessLogs.csv`). Described each one of them in detail in the `data/data_overview.md`.
   
