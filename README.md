@@ -1,6 +1,9 @@
 # Social-Media ETL with Apache Pig
 
-A structured Apache Pig ETL project for handling big data from social-media with supplementary Jupyter notebook-scripts for timestamp calculation. Demonstrates end-to-end big-data ingestion, transformation, and analysis workflows. This repository contains:
+A structured Apache Pig ETL project for handling big data from social-media with supplementary Jupyter notebook-scripts for timestamp calculation. Demonstrates end-to-end big-data ingestion, transformation, and analysis workflows. 
+
+## Contents
+This repository contains:
 
 1. **Pig Queries** (`pig/`):  
    - Modular Pig Latin scripts (`Task_A` → `Task_H`) that load CSVs, filter and aggregate user/page data, join datasets, and output results. Stored them in respective folder as .txt files.
