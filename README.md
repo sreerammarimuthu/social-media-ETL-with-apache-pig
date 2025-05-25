@@ -6,11 +6,11 @@ A structured Apache Pig ETL project for handling big data from social-media with
 This repository contains:
 
 1. **Pig Queries** (`pig/`):  
-   - Modular Pig Latin scripts (`Task_A` → `Task_H`) that load CSVs, filter and aggregate user/page data, join datasets, and output results. Stored them in respective folder as .txt files.
+   - Modular Pig Latin scripts (`Task_A` → `Task_H`) that load CSVs, filter and aggregate user/page data, join datasets, and output results. Added them here as .txt files.
      
 2. **Utilities** (`utils/`):  
-   - **`compute_timestamp.py`**: Generates “90-days-ago” timestamp along with the current one, stored in `ninety_days_ago_timestamp.txt`.
+   - **`compute_timestamp.ipynb`**: Generates “90-days-ago” timestamp along with the latest one, stored in `ninety_days_ago_timestamp.txt`.
      
 3. **Subsets of Data** (`data/`):  
-   - Source CSVs (`subset_FaceInPage.csv`, `subset_Associates.csv`, `subset_AccessLogs.csv`)
+   - Subsets of the actual data, added the CSVs (`subset_FaceInPage.csv`, `subset_Associates.csv`, `subset_AccessLogs.csv`). Described each one of them in detail in the 'data/data_overview.md'.
   
