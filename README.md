@@ -11,4 +11,6 @@ A structured Apache Pig ETL project for handling big data from social-media with
      
 `data/`
 - Subsets of the actual data, added the CSVs (`subset_FaceInPage.csv`, `subset_Associates.csv`, `subset_AccessLogs.csv`). Described each one of them in detail in the `data/data_overview.md`.
-  
+
+`output/`
+- Outputs from (`Task_A` → `Task_H`) Pig Latin scripts.
