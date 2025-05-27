@@ -14,3 +14,16 @@ A structured Apache Pig ETL project for handling big data from social-media with
 
 `output/`
 - Outputs of Pig Latin scripts from (`Task_A` → `Task_H`).
+
+## Tasks Summary
+
+| Task | Focus |
+|------|-------|
+| A | Filter users by nationality |
+| B | Find top 10 most visited pages |
+| C | Count users by country code |
+| D | Match owners with relationship counts |
+| E | Calculate total and distinct page accesses per user |
+| F | Identify users who haven’t visited their friend’s page |
+| G | Detect inactive users based on access timestamps |
+| H | Determine whether an owner is 'More Popular' based on relationships |
